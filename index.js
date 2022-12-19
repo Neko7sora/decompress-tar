@@ -1,4 +1,4 @@
-import fileType from 'file-type';
+import fileTypeFromFile from 'file-type';
 import isStream from 'is-stream';
 import tarStream from 'tar-stream';
 
@@ -7,7 +7,7 @@ export default input => {
 		return Promise.reject(new TypeError(`Expected a Buffer or Stream, got ${typeof input}`));
 	}
 
-	if (Buffer.isBuffer(input) && (!fileType(input) || fileType(input).ext !== 'tar')) {
+	if (Buffer.isBuffer(input) && (!fileTypeFromFile(input) || fileTypeFromFile(input).ext !== 'tar')) {
 		return Promise.resolve([]);
 	}
 
