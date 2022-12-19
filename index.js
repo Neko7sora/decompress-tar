@@ -1,9 +1,8 @@
-'use strict';
-const fileType = require('file-type');
-const isStream = require('is-stream');
-const tarStream = require('tar-stream');
+import fileType from 'file-type';
+import isStream from 'is-stream';
+import tarStream from 'tar-stream';
 
-module.exports = () => input => {
+export default input => {
 	if (!Buffer.isBuffer(input) && !isStream(input)) {
 		return Promise.reject(new TypeError(`Expected a Buffer or Stream, got ${typeof input}`));
 	}
