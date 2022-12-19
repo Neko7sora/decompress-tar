@@ -1,33 +1,38 @@
-import fileTypeFromFile from 'file-type';
-import isStream from 'is-stream';
-import tarStream from 'tar-stream';
+import { fileTypeFromFile } from "file-type";
+import { isStream } from "is-stream";
+import { tarStream } from "tar-stream";
 
-export default input => {
+export default (input) => {
 	if (!Buffer.isBuffer(input) && !isStream(input)) {
-		return Promise.reject(new TypeError(`Expected a Buffer or Stream, got ${typeof input}`));
+		return Promise.reject(
+			new TypeError(`Expected a Buffer or Stream, got ${typeof input}`)
+		);
 	}
 
-	if (Buffer.isBuffer(input) && (!fileTypeFromFile(input) || fileTypeFromFile(input).ext !== 'tar')) {
+	if (
+		Buffer.isBuffer(input) &&
+		(!fileTypeFromFile(input) || fileTypeFromFile(input).ext !== "tar")
+	) {
 		return Promise.resolve([]);
 	}
 
 	const extract = tarStream.extract();
 	const files = [];
 
-	extract.on('entry', (header, stream, cb) => {
+	extract.on("entry", (header, stream, cb) => {
 		const chunk = [];
 
-		stream.on('data', data => chunk.push(data));
-		stream.on('end', () => {
+		stream.on("data", (data) => chunk.push(data));
+		stream.on("end", () => {
 			const file = {
 				data: Buffer.concat(chunk),
 				mode: header.mode,
 				mtime: header.mtime,
 				path: header.name,
-				type: header.type
+				type: header.type,
 			};
 
-			if (header.type === 'symlink' || header.type === 'link') {
+			if (header.type === "symlink" || header.type === "link") {
 				file.linkname = header.linkname;
 			}
 
@@ -38,11 +43,11 @@ export default input => {
 
 	const promise = new Promise((resolve, reject) => {
 		if (!Buffer.isBuffer(input)) {
-			input.on('error', reject);
+			input.on("error", reject);
 		}
 
-		extract.on('finish', () => resolve(files));
-		extract.on('error', reject);
+		extract.on("finish", () => resolve(files));
+		extract.on("error", reject);
 	});
 
 	extract.then = promise.then.bind(promise);
