@@ -12,7 +12,7 @@ module.exports = () => (input) => {
 
 	if (
 		Buffer.isBuffer(input) &&
-		(!fileType(input) || fileType(input).ext !== "tar")
+		(!fileType.fromBuffer(input) || fileType.fromBuffer(input).ext !== "tar")
 	) {
 		return Promise.resolve([]);
 	}
